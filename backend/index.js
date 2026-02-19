@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import checkToken from "./middlewares/CheckToken.js";
 import User from "./models/User.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
@@ -16,7 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend url to allow
+    origin: process.env.FRONTEND_URL, // frontend url to allow
     credentials: true, /// for cookies
   })
 );
@@ -131,6 +133,6 @@ app.post("/students/delete", checkToken, async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   console.log("Backend is running on port 3000");
 });
