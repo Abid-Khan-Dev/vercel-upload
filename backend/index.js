@@ -119,19 +119,7 @@ app.use("/students", StudentRoutes);
 //   return res.json(updatedStudents);
 // });
 
-// delete Students
-app.post("/students/delete", checkToken, async (req, res) => {
-  try {
-    const { id } = req.body;
-    console.log(req.body);
-    await Student.findByIdAndDelete(id);
 
-    return res.json({ success: true });
-  } catch (error) {
-    console.log(error.message);
-    return res.status(500).json("Internal Server error");
-  }
-});
 
 app.listen(process.env.PORT, () => {
   console.log("Backend is running on port 3000");

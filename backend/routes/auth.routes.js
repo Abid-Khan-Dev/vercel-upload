@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
 
 
 router.get('/me', checkToken, async (req, res) => {
-  console.log(req.user);
+  // console.log(req.user);
   const user = await User.findById(req.user);
   console.log(user);
 

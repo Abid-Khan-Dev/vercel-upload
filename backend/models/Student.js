@@ -4,6 +4,8 @@ const studentSchema = new mongoose.Schema({
   name: String,
   fName: String,
   rollNo: Number,
+}, {
+  timestamps: true
 });
 
 const Student = mongoose.model("Student", studentSchema);

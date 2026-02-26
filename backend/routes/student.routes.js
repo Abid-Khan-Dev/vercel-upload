@@ -7,9 +7,17 @@ const router = express.Router();
 // get All Students2
 //  /students
 router.get("/", checkToken, async (req, res) => {
-  console.log(req.user);
-  const students = await Student.find();
-  return res.status(200).json({ students });
+  console.log(req.query);
+  const { search } = req.query;
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit)
+  const skip = (page - 1) * limit;
+  const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+  // const students = search ? await Student.find({ name: { $regex: search, $options: 'i' } }) : await Student.find().sort({ 'createdAt': -1 });
+  const students = await Student.find(filter).sort({ 'createdAt': -1 }).limit(limit).skip(skip);
+  const totalStudents = await Student.countDocuments(filter)
+  return res.status(200).json({ students, totalStudents });
 });
 
 //  /students/create
@@ -46,4 +54,22 @@ router.post("/update", checkToken, async (req, res) => {
   return res.json(updatedStudents);
 });
 
+// delete Students
+router.post("/delete", checkToken, async (req, res) => {
+  console.log('fdsfdsfds');
+
+  try {
+
+
+
+    const { id } = req.body;
+    console.log(req.body);
+    await Student.findByIdAndDelete(id);
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json("Internal Server error");
+  }
+});
 export default router;

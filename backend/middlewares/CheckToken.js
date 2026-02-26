@@ -8,7 +8,7 @@ const checkToken = (req, res, next) => {
   if (!token) return res.status(401).json({ msg: "Token is required" });
   try {
     const decoded = jwt.verify(token, "pass@123"); // to reverse token to its original form
-    console.log(decoded, "decoded");
+    // console.log(decoded, "decoded");
     req.user = decoded.userId;
     next(); /// move to next function
   } catch (error) {
