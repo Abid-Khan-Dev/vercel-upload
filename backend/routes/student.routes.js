@@ -8,16 +8,18 @@ const router = express.Router();
 //  /students
 router.get("/", checkToken, async (req, res) => {
   console.log(req.query);
-  const { search } = req.query;
+  // const { search } = req.query;
   const page = Number(req.query.page);
   const limit = Number(req.query.limit)
   const skip = (page - 1) * limit;
-  const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+  // const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
 
   // const students = search ? await Student.find({ name: { $regex: search, $options: 'i' } }) : await Student.find().sort({ 'createdAt': -1 });
-  const students = await Student.find(filter).sort({ 'createdAt': -1 }).limit(limit).skip(skip);
-  const totalStudents = await Student.countDocuments(filter)
-  return res.status(200).json({ students, totalStudents });
+  const students = await Student.find().sort({ 'createdAt': -1 }).limit(limit).skip(skip);
+
+  const totalStudents = await Student.countDocuments()
+  const totalPages = Math.ceil(totalStudents / limit) // 21 docs page 3 
+  return res.status(200).json({ students, totalStudents, totalPages });
 });
 
 //  /students/create

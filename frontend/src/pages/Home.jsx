@@ -13,11 +13,12 @@ function Home() {
 
     const [students, setStudents] = useState([])
     const [search, setSearch] = useState('')
-    const [debounced, setDebounced] = useState('')
+    // const [debounced, setDebounced] = useState('')
     const [updatedId, setUpdatedId] = useState(null)
     const [totalStudents, setTotalStudents] = useState(null)
     const [loading, setLoading] = useState(false)
     const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(null)
     const limit = 10;
 
     function handleChange(e) {
@@ -28,41 +29,49 @@ function Home() {
     }
     const getAllStudents = async () => {
         if (loading) return
+        if (totalPages && page > totalPages) return
         try {
-            setLoading(true)
-            const response = await api.get(`/students?search=${debounced}&page=${page}&limit=${limit}`)
 
-            setStudents([...students, ...response.data.students])
+            setLoading(true)
+            const response = await api.get(`/students?&page=${page}&limit=${limit}`)
+
+            setStudents(prev => [...prev, ...response.data.students])
             setTotalStudents(response.data.totalStudents)
+            setTotalPages(response.data.totalPages)
         } catch (error) {
+            console.log(error.message);
             alert(error.response.data)
             setLoading(false)
         } finally {
+
             setLoading(false)
         }
 
     }
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebounced(search)
-        }, 500);
-        console.log(timer);
+
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setDebounced(search)
+    //     }, 500);
+    //     console.log(timer);
 
 
-        return () => clearTimeout(timer);
-    }, [search])
+    //     return () => clearTimeout(timer);
+    // }, [search])
 
     // useEffect(() => {
     //     getAllStudents()
+    //     setPage(1)
     // }, [debounced])
 
     useEffect(() => {
         getAllStudents()
     }, [page])
+
     useEffect(() => {
         const handleScroll = () => {
-            if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.scrollHeight) {
-                setPage(page + 1)
+            if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.scrollHeight - 100 && !loading) {
+                setPage(old => old + 1)
             }
         }
         window.addEventListener('scroll', handleScroll)
@@ -166,6 +175,12 @@ function Home() {
                             </td>
                         </tr>
                     })}
+                    {loading && <tr className='m-2 p-4 text-center font-semibold text-gray-700'>
+                        <td>Loading...</td>
+                    </tr>}
+                    {page == totalPages && <tr className='m-2 p-4 text-center font-semibold text-gray-700'>
+                        <td>No more data found</td>
+                    </tr>}
                 </tbody>
             </table>
             {/* <button onClick={getAllStudents}>get All students</button> */}
